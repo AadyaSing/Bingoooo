@@ -1,0 +1,408 @@
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.swing.JOptionPane;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import javax.imageio.ImageIO;
+
+import javax.swing.JPanel;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+
+//ArrayList<Integer> blah = new ArrayList();
+
+public class BingoCardPanel extends JPanel implements MouseListener{
+	private int[][] card = new int[5][5];
+	private BufferedImage bingo;
+	private int seed;
+	private int num;
+	private ArrayList<Integer> duplicates = new ArrayList();
+	private ArrayList<Integer> duplicates2 = new ArrayList(75);
+	private int[] BingoBallsRandomNums = new int[75];
+	private boolean[][] spacesCovered = new boolean[5][5];
+	
+	public BingoCardPanel(int sd) 
+	{
+		seed = sd;
+		try
+		{
+			bingo = ImageIO.read(new File("bingo logo2.png"));
+			
+		}
+		catch(Exception E) {
+			System.out.println("Exception Error");
+			return; 
+		}
+		addMouseListener(this);
+		Random vals = new Random(sd); //seed
+		int col = 0;
+		for(int row = 0; row < 5; row++) {
+			int val = vals.nextInt(14)+1;
+			if(duplicates.indexOf(val)==-1) {
+				card[row][col] = val;
+				duplicates.add(val);
+			}
+			else {
+				row--;
+			}
+		}
+		col++;
+		for(int row = 0; row < 5; row++) {
+			int val = vals.nextInt(14)+16;
+			if(duplicates.indexOf(val)==-1) {
+				card[row][col] = val;
+				duplicates.add(val);
+			}
+			else {
+				row--;
+			}
+		}
+		col++;
+		for(int row = 0; row < 5; row++) {
+			int val = vals.nextInt(14)+31;
+			if(duplicates.indexOf(val)==-1) {
+				card[row][col] = val;
+				duplicates.add(val);
+			}
+			else {
+				row--;
+			}
+		}
+		col++;
+		for(int row = 0; row < 5; row++) {
+			int val = vals.nextInt(14)+46;
+			if(duplicates.indexOf(val)==-1) {
+				card[row][col] = val;
+				duplicates.add(val);
+			}
+			else {
+				row--;
+			}
+		}
+		col++;
+		for(int row = 0; row < 5; row++) {
+			int val = vals.nextInt(14)+61;
+			if(duplicates.indexOf(val)==-1) {
+				card[row][col] = val;
+				duplicates.add(val);
+			}
+			else {
+				row--;
+			}
+		}
+		
+		for(int i = 1; i <= 75; i++) {
+			duplicates2.add(i);
+		}
+		
+		
+	}
+	public void paint(Graphics g) {
+		
+		//g.drawImage(white, 0,  0, getWidth(), getHeight(), null);
+		g.drawImage(bingo, 500, 0, 500, 80, null); //500 0 and 100
+		g.drawLine(500, 100, 500, 760);
+		g.drawLine(650, 100, 650, 760);
+		g.drawLine(800, 100, 800, 760);
+		g.drawLine(950, 100, 950, 760);
+		
+		g.drawLine(400,200, 1100, 200);
+		g.drawLine(400,350, 1100, 350);
+		g.drawLine(400,500, 1100, 500);
+		g.drawLine(400,650, 1100, 650);
+		
+		 
+		g.setColor(Color.BLACK);
+		g.setFont(new Font(Font.SERIF, Font.BOLD, 30));
+		g.drawString("FREE",685,450);
+		// y by 150, x by 250
+		
+		int x = 435;
+		int y = 150;
+		for(int ro = 0; ro < 5; ro++) {
+			for(int col = 0; col< 5; col++ ) {
+				if(ro == 2 && col == 2) { 
+					x += 150;
+					g.drawString(String.valueOf(card[2][3]), x, y);
+					x+=150;
+					g.drawString(String.valueOf(card[2][4]), x, y);
+					break;
+					
+				}
+				g.drawString(String.valueOf(card[ro][col]), x, y);
+				x+=150;	
+				}
+			y+=150;
+			x=435;
+			}
+		
+		g.drawOval(150, 200, 160, 88);
+		g.setColor(Color.orange);
+	    g.fillOval(150, 200, 160, 88);
+	    
+	    g.setColor(Color.black);
+	    g.setFont(new Font(Font.SERIF, Font.BOLD, 19));
+	    g.drawString("Click on the orange oval", 125, 170);
+	    g.drawString("to generate a bingo ball", 125, 190);
+	    
+	    //to reset the bingoBall if num doesn't match
+
+	    g.drawOval(150, 500, 160, 88);
+		g.setColor(Color.red);
+		g.fillOval(150, 500, 160, 88);
+		
+		g.setColor(Color.black);
+	    g.setFont(new Font(Font.SERIF, Font.BOLD, 19));
+	    g.drawString("Click on the red oval", 120, 610);
+	    g.drawString("after the orange ", 120, 630); 
+	    g.setFont(new Font(Font.SERIF, Font.BOLD, 150));
+	    g.drawString("X", 675, 468);
+	    
+	    int count;
+	    
+	        // the columns
+	    
+	        for(int row = 0; row < spacesCovered.length; row++ ) {
+
+	            count = 0;
+	    
+	            for(int col = 0; col < spacesCovered[0].length; col++) {
+	    
+	               if(spacesCovered[row][col])
+	    
+	                  count++;
+	    
+	            }
+	    
+	            if(count == 5)
+	    
+	                g.drawString("U got bingo!" , 1120, 400);
+	    
+	        }
+	    
+	        // the rows
+	    
+	        for(int col = 0; col < spacesCovered.length; col++ ) {
+	    
+	            count = 0;
+	    
+	            for(int row = 0; row < spacesCovered[0].length; row++) {
+	    
+	               if(spacesCovered[row][col])
+	    
+	                  count++;
+	    
+	            }
+	    
+	            if(count == 5) {
+	            	g.drawString("U got bingo!" , 1120, 400);
+	            }
+	            else {
+	            	g.drawString(" " , 1120, 400);
+	            }
+	    
+	            	
+	    
+	        }
+	    
+	        // the diagonals (left to right, up to down easy
+	    
+	        count = 0;
+	    
+	        for(int rc = 0; rc < spacesCovered[0].length; rc++) {
+	    
+	            if(spacesCovered[rc][rc])
+	    
+	                count++;
+	    	        }
+	    
+	        if(count == 5) {
+	    
+	        	g.drawString("U got bingo!" , 1120, 400);
+	        }
+	        else {
+	        	g.drawString(" " , 1120, 400); 
+	        }
+	    
+	         
+	    
+	        // ok the last one
+	    
+	    
+	    
+	    
+	    }
+	    
+			
+		
+	    
+	
+
+	
+	public void FillBingoBalls() {
+		Random r = new Random();
+		//int low = 1;
+		//int high = 75;
+		
+		int index = r.nextInt(duplicates2.size());
+		num = duplicates2.remove(index);
+
+}
+	
+			
+			
+		
+			
+		
+	
+
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+		int clickCount = 0;;
+		if(e.getButton() == e.BUTTON1) {
+			if(x >= 150 && x <= 310 && y >= 200 && y <= 288) { 
+					paintBingoBall(getGraphics());
+					checkBingoBall(getGraphics());
+					markLocation(getGraphics());
+			}
+			}
+			if(x>= 150 && x<= 310 && y>= 400 && y <= 588) {
+				//repaint();
+				FillBingoBalls();
+				clickCount = 0;
+			}
+}
+
+	public void markLocation(Graphics g) {
+		spacesCovered[2][2] = true;
+		for(int row = 0; row< card[0].length; row++) {
+			for(int col = 0; col< card[0].length; col++) {
+				if(card[row][col] == num) {
+					spacesCovered[row][col] = true;
+					checkBingoBall(getGraphics());
+					
+				}
+			}
+		}
+	}
+	
+	public void paintBingoBall(Graphics g) {
+		g.setColor(Color.white);
+		g.fillOval(175, 370, 120, 120);
+		g.setColor(Color.black);
+	    g.setFont(new Font(Font.SERIF, Font.BOLD, 19));
+		g.drawString("A ball is drawn!" , 160, 350);
+		g.drawOval(175,370, 120, 120);
+		g.setColor(Color.black);
+	    g.setFont(new Font(Font.SERIF, Font.BOLD, 50));
+	    g.drawString(String.valueOf(num), 200, 450);
+	    
+
+	}
+	public void checkBingoBall(Graphics g) {
+	    for(int row = 0; row< card[0].length; row++) {
+			for(int col = 0; col< card[0].length; col++) {
+				if(card[row][col] == num) {
+					spacesCovered[row][col] = true;
+					if(spacesCovered[row][col] = true) {
+						g.setFont(new Font(Font.SERIF, Font.BOLD, 150));
+						if(row == 0) {
+							if(col == 0) {
+								g.drawString("X", col + 395, row + 190);
+							}
+							else if(col == 1) {
+								g.drawString("X", col + 525, row + 190);
+							}
+							else if(col == 2) {
+								g.drawString("X", col + 675, row + 190);
+							}
+							else if(col == 3) {
+								g.drawString("X", col + 800, row + 190);
+							}
+							else if(col == 4) {
+								g.drawString("X", col + 955, row + 190);
+							}
+						}
+						if(row == 1) {
+							if(col == 0) {
+								g.drawString("X", col + 395, row + 315);
+							}
+							else if(col == 1) {
+								g.drawString("X", col + 525, row + 315);
+							}
+							else if(col == 2) {
+								g.drawString("X", col + 675, row + 315);
+							}
+							else if(col == 3) {
+								g.drawString("X", col + 810, row + 315);
+							}
+							else if(col == 4) {
+								g.drawString("X", col + 955, row + 315);
+							}
+						}
+						if(row == 2) {
+							if(col == 0) {
+								g.drawString("X", col + 395, row + 466);
+							}
+							else if(col == 1) {
+								g.drawString("X", col + 525, row + 466);
+							}
+							else if(col == 3) {
+								g.drawString("X", col + 810, row + 466);
+							}
+							else if(col == 4) {
+								g.drawString("X", col + 955, row + 466);
+							}
+						}
+						if(row == 3) {
+							if(col == 0) {
+								g.drawString("X", col + 395, row + 615);
+							}
+							else if(col == 1) {
+								g.drawString("X", col + 525, row + 615);
+							}
+							else if(col == 2) {
+								g.drawString("X", col + 675, row + 615);
+							}
+							else if(col == 3) {
+								g.drawString("X", col + 810, row + 615);
+							}
+							else if(col == 4) {
+								g.drawString("X", col + 955, row + 615);
+							}
+						}
+						if(row == 4) {
+							if(col == 0) {
+								g.drawString("X", col + 395, row + 768);
+							}
+							else if(col == 1) {
+								g.drawString("X", col + 525, row + 768);
+							}
+							else if(col == 2) {
+								g.drawString("X", col + 675, row + 768);
+							}
+							else if(col == 3) {
+								g.drawString("X", col + 810, row + 768);
+							}
+							else if(col == 4) {
+								g.drawString("X", col + 955, row + 768);
+							}
+						}
+					}
+				}
+			}
+	    }
+	}
+}
+
+	    
